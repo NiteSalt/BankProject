@@ -8,6 +8,7 @@ public sealed class BankAccount
 	private long cash;
 	private DateOnly expireDate;
 	private readonly Client owner;
+	private bool isActive;
 
 	/// <summary>
 	/// Количество валюты на балансе (в копейках).
@@ -34,6 +35,7 @@ public sealed class BankAccount
 	{
 		this.owner = owner;
 		this.expireDate = expireDate;
+		this.isActive = true;
 
 		if (owner.Age < 16)
 		{
@@ -45,6 +47,23 @@ public sealed class BankAccount
 	/// Проверяет действует ли аккаунт или нет.
 	/// </summary>
 	public bool IsExpired => DateTime.Now >= expireDate.ToDateTime(TimeOnly.MinValue);
+
+	/// <summary>
+	/// Статус аккаунта
+	/// </summary>
+	public AccountStatus Status
+	{
+		get
+		{
+			AccountStatus status = default;
+			status |= IsExpired || isActive ? AccountStatus.Open : AccountStatus.Closed;
+			if (Cash <= 0)
+			{
+				status |= AccountStatus.Bankrupt;
+			}
+			return status;
+		}
+	}
 
 	/// <summary>
 	/// Снять деньги со счёта.
@@ -79,5 +98,13 @@ public sealed class BankAccount
 
 		cash += amount;
 		return true;
+	}
+
+	/// <summary>
+	/// Закрывает счёт.
+	/// </summary>
+	public void Close()
+	{
+		this.isActive = false;
 	}
 }

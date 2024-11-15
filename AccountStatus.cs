@@ -1,4 +1,5 @@
-﻿public enum AccountStatus : byte
+﻿[Flags]
+public enum AccountStatus : byte
 {
 	Open = 0,
 	Closed = 1,

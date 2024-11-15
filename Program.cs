@@ -1,6 +1,5 @@
 ﻿using BankProject;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 public static class Program
 {
@@ -10,10 +9,16 @@ public static class Program
 
 		BankAccount account = new(client, new DateOnly(2027, 12, 12));
 
+		Console.WriteLine($"Account status: {account.Status}");
 		Test(account.IsExpired);
 		Test(account.Withdraw(20));
 		Test(account.Replenish(120));
 		Test(account.Withdraw(20));
+		Console.WriteLine($"Account status: {account.Status}");
+		Test(account.Withdraw(100));
+		Console.WriteLine($"Account status: {account.Status}");
+		account.Close();
+		Console.WriteLine($"Account status: {account.Status}");
 	}
 
 	private static void Test(bool result, [CallerArgumentExpression(nameof(result))] string? expression = null)
