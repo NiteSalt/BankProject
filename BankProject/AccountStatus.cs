@@ -1,4 +1,6 @@
-﻿[Flags]
+﻿using System;
+
+[Flags]
 public enum AccountStatus : byte
 {
 	Open = 0,

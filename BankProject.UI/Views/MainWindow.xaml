@@ -1,0 +1,129 @@
+﻿<Window x:Class="BankProject.UI.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:BankProject.UI"
+		xmlns:mv="clr-namespace:BankProject.UI.ViewModels"
+		xmlns:conv="clr-namespace:BankProject.UI.Converters"
+		xmlns:ui="http://schemas.modernwpf.com/2019"
+		mc:Ignorable="d"
+		Title="Управление банком"
+		Height="700" MinHeight="700"
+		Width="1000" MinWidth="1000"
+		ui:WindowHelper.UseModernWindowStyle="True">
+	<Window.DataContext>
+		<mv:MainWindowViewModel />
+	</Window.DataContext>
+	<Window.Resources>
+		<ui:Flyout x:Key="FieldNotSetFlyout" Placement="Top">
+			<TextBlock Text="Поле не может быть пустым!" />
+		</ui:Flyout>
+		<ui:Flyout x:Key="PassportInvalidFlyout" Placement="Top">
+			<TextBlock Text="Номер пасспорта неверен!" />
+		</ui:Flyout>
+		<ui:Flyout x:Key="DateIsInFutureFlyout" Placement="Top">
+			<TextBlock Text="Дата должна быть в прошлом!" />
+		</ui:Flyout>
+
+		<conv:NullableDateTimeToDateOnlyConverter x:Key="DateConverter" />
+	</Window.Resources>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition />
+			<ColumnDefinition />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<Grid.Resources>
+			<Style TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultButtonStyle}">
+				<Setter Property="FontSize" Value="12px" />
+				<Setter Property="Margin" Value="3,0,0,0" />
+			</Style>
+			<Style TargetType="{x:Type ui:SimpleStackPanel}">
+				<Setter Property="Margin" Value="12" />
+				<Setter Property="Spacing" Value="5" />
+			</Style>
+		</Grid.Resources>
+
+		<ui:SimpleStackPanel Grid.Column="0">
+			<TextBlock
+				FontWeight="Bold"
+				FontSize="15px"
+				Margin="0,10,10,2"
+				Text="Регистрация клиента" />
+
+			<TextBlock Text="Имя клиента" />
+			<TextBox x:Name="registrationNameBox" Text="{Binding RegistrationName, Mode=TwoWay}" />
+			<TextBlock Text="Фамилия клиента" />
+			<TextBox x:Name="registrationSurnameBox" Text="{Binding RegistrationSurname, Mode=TwoWay}"/>
+			<TextBlock Text="Отчетсво клиента" />
+			<TextBox x:Name="registrationPatronymBox" Text="{Binding RegistrationPatronym, Mode=TwoWay}"/>
+			<TextBlock Text="Номер паспорта клиента" />
+			<ui:NumberBox x:Name="registrationPassportBox" Value="{Binding RegistrationPassport, Mode=TwoWay}" />
+			<TextBlock Text="Дата рождения клиента" />
+			<DatePicker x:Name="registrationDatePicker" SelectedDate="{Binding RegistrationDate, Mode=TwoWay, Converter={StaticResource DateConverter}}" />
+			<Button Content="Зарегистрировать"
+					Margin="10,10,0,10"
+					HorizontalAlignment="Right"
+					Click="OnRegistrationButtonClick" />
+
+
+			<TextBlock
+				FontWeight="Bold"
+				FontSize="15px"
+				Margin="0,10,10,2"
+				Text="Регистрация счёта" />
+
+			<TextBlock Text="Владелец счёта" />
+			<ComboBox
+				ItemsSource="{Binding Clients}"
+				SelectedItem="{Binding CreateAccountClient, Mode=TwoWay}"/>
+			<TextBlock Text="Дата окончания действия счёта" />
+			<DatePicker x:Name="createAccountDatePicker" SelectedDate="{Binding CreateAccountDate, Mode=TwoWay, Converter={StaticResource DateConverter}}" />
+			<Button Content="Создать"
+					Margin="10,10,0,10"
+					HorizontalAlignment="Right"
+					Click="OnAccountCreationButtonClick" />
+		</ui:SimpleStackPanel>
+
+		<ui:SimpleStackPanel Grid.Column="1">
+			<TextBlock
+				FontWeight="Bold"
+				FontSize="15px"
+				Margin="0,10,10,2"
+				Text="Транзакции" />
+			
+			<TextBlock Text="Отправитель" />
+			<ComboBox ItemsSource="{Binding Clients}" />
+			<TextBlock Text="Получатель" />
+			<ComboBox ItemsSource="{Binding Clients}" />
+		</ui:SimpleStackPanel>
+
+		<ui:SimpleStackPanel Grid.Column="2">
+			<TextBlock
+				FontWeight="Bold"
+				FontSize="15px"
+				Margin="0,10,10,2"
+				Text="Данные клиента" />
+
+			<TextBlock Text="Владелец" />
+			<ComboBox
+				ItemsSource="{Binding Clients}"
+				SelectedItem="{Binding InfoSelectedClient, Mode=TwoWay}" />
+			<TextBlock Text="Счёт" />
+			<ComboBox
+				SelectedItem="{Binding InfoSelectedAccount, Mode=TwoWay}"
+				ItemsSource="{Binding InfoClientAccounts, Mode=OneWay}"
+				/>
+
+			<Separator/>
+			
+			<TextBlock Text="Управление счётом" />
+			<ui:NumberBox AcceptsExpression="True" Value="{Binding ControlCashAmount, Mode=TwoWay}" />
+			<DockPanel>
+				<Button Content="Пополнить" Click="OnReplenishButtonClick" />
+				<Button Content="Снять" Click="OnWithdrawButtonClick" />
+			</DockPanel>
+		</ui:SimpleStackPanel>
+	</Grid>
+</Window>

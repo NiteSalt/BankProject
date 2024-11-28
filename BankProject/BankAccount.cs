@@ -1,4 +1,6 @@
-﻿namespace BankProject;
+﻿using System;
+
+namespace BankProject;
 
 /// <summary>
 /// Аккаунт в банке.
@@ -41,6 +43,8 @@ public sealed class BankAccount
 		{
 			throw new OperationCanceledException();
 		}
+
+		owner.AddAccount(this);
 	}
 
 	/// <summary>
@@ -106,5 +110,19 @@ public sealed class BankAccount
 	public void Close()
 	{
 		this.isActive = false;
+	}
+
+	public override string ToString()
+	{
+		if (!isActive)
+		{
+			return "Закрытый счёт";
+		}
+		else
+		{
+			long rubbles = cash / 100;
+			long kopeck = cash % 100;
+			return $"Счёт: {rubbles}.{kopeck:00}₽" + (Status.HasFlag(AccountStatus.Bankrupt) ? " (Банкрот)" : string.Empty);
+		}
 	}
 }
