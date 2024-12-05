@@ -24,6 +24,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
 	private uint controlCashAmount;
 
+	private Client? transactionFromClient;
+	private BankAccount? transactionFromAccount;
+	private Client? transactionToClient;
+	private BankAccount? transactionToAccount;
+
+	private uint transactionAmount;
+
 	public event PropertyChangedEventHandler? PropertyChanged;
 
 	public MainWindowViewModel()
@@ -150,6 +157,75 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 		}
 	}
 
+	public Client? TransactionFromClient
+	{
+		get => transactionFromClient;
+		set
+		{
+			this.transactionFromClient = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(TransactionFromAccounts));
+		}
+	}
+
+	public Client? TransactionToClient
+	{
+		get => transactionToClient;
+		set
+		{
+			this.transactionToClient = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(TransactionToAccounts));
+		}
+	}
+
+	public ObservableCollection<BankAccount> TransactionToAccounts
+	{
+		get
+		{
+			return new(TransactionToClient?.Accounts ?? Array.Empty<BankAccount>());
+		}
+	}
+
+	public ObservableCollection<BankAccount> TransactionFromAccounts
+	{
+		get
+		{
+			return new(TransactionFromClient?.Accounts ?? Array.Empty<BankAccount>());
+		}
+	}
+
+	public BankAccount? TransactionFromAccount
+	{
+		get => transactionFromAccount;
+		set
+		{
+			this.transactionFromAccount = value;
+			OnPropertyChanged();
+		}
+	}
+
+
+	public BankAccount? TransactionToAccount
+	{
+		get => transactionToAccount;
+		set
+		{
+			this.transactionToAccount = value;
+			OnPropertyChanged();
+		}
+	}
+
+	public uint TransactionAmount
+	{
+		get => controlCashAmount;
+		set
+		{
+			this.controlCashAmount = value;
+			OnPropertyChanged();
+		}
+	}
+
 	public void RegisterNewClient(Client client)
 	{
 		clients.Add(client);
@@ -160,6 +236,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 	{
 		OnPropertyChanged(nameof(this.InfoClientAccounts));
 		OnPropertyChanged(nameof(this.InfoSelectedAccount));
+		OnPropertyChanged(nameof(this.TransactionFromAccounts));
+		OnPropertyChanged(nameof(this.TransactionToAccounts));
 	}
 
 	private void OnPropertyChanged([CallerMemberName] string? caller = null)
@@ -172,5 +250,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 		OnPropertyChanged(nameof(this.InfoSelectedAccount));
 		OnPropertyChanged(nameof(this.InfoSelectedClient));
 		OnPropertyChanged(nameof(this.InfoClientAccounts));
+
+		OnPropertyChanged(nameof(this.TransactionFromAccount));
+		OnPropertyChanged(nameof(this.TransactionToAccount));
+		OnPropertyChanged(nameof(this.TransactionFromAccounts));
+		OnPropertyChanged(nameof(this.TransactionToAccounts));
 	}
 }

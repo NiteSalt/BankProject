@@ -1,6 +1,7 @@
 ﻿using BankProject.UI.ViewModels;
 using ModernWpf.Controls.Primitives;
 using System;
+using System.Media;
 using System.Windows;
 
 namespace BankProject.UI;
@@ -35,8 +36,20 @@ public partial class MainWindow : Window
 			return;
 		}
 
-		BankAccount newAccount = new BankAccount(client, expireDate);
-		DataContext.RegisterNewAccount(client, newAccount);
+		BankAccount newAccount = null;
+		try
+		{
+			newAccount = new(client, expireDate);
+		}
+		catch (OperationCanceledException)
+		{
+			SystemSounds.Hand.Play();
+		}
+
+		if (newAccount != null)
+		{
+			DataContext.RegisterNewAccount(client, newAccount);
+		}
 	}
 
 	private void OnRegistrationButtonClick(object sender, RoutedEventArgs e)
@@ -87,8 +100,14 @@ public partial class MainWindow : Window
 		BankAccount? account = DataContext.InfoSelectedAccount;
 		uint amount = DataContext.ControlCashAmount;
 
-		account?.Replenish(amount);
-		DataContext.OnUpdateAccount();
+		if (account?.Replenish(amount) == false)
+		{
+			SystemSounds.Hand.Play();
+		}
+		else
+		{
+			DataContext.OnUpdateAccount();
+		}
 	}
 
 	private void OnWithdrawButtonClick(object sender, RoutedEventArgs e)
@@ -96,7 +115,43 @@ public partial class MainWindow : Window
 		BankAccount? account = DataContext.InfoSelectedAccount;
 		uint amount = DataContext.ControlCashAmount;
 
-		account?.Withdraw(amount);
-		DataContext.OnUpdateAccount();
+		if (account?.Withdraw(amount) == false)
+		{
+			SystemSounds.Hand.Play();
+		}
+		else
+		{
+			DataContext.OnUpdateAccount();
+		}
+	}
+
+	private void OnTransferButtonClick(object sender, RoutedEventArgs e)
+	{
+		BankAccount? from = DataContext.TransactionFromAccount;
+		BankAccount? to = DataContext.TransactionToAccount;
+		uint amount = DataContext.TransactionAmount;
+	
+		if (from == to || from == null || to == null)
+		{
+			SystemSounds.Hand.Play();
+			return;
+		}
+
+		if ((from?.IsExpired ?? false) || (to?.IsExpired ?? false))
+		{
+			SystemSounds.Hand.Play();
+			return;
+		}
+
+		if (from!.Withdraw(amount))
+		{
+			if (!to!.Replenish(amount))
+			{
+				from.Replenish(amount); // Возврат денег, если не удалось перевести
+				return;
+			}
+
+			DataContext.OnUpdateAccount();
+		}
 	}
 }

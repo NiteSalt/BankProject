@@ -94,9 +94,16 @@
 				Text="Транзакции" />
 			
 			<TextBlock Text="Отправитель" />
-			<ComboBox ItemsSource="{Binding Clients}" />
+			<ComboBox ItemsSource="{Binding Clients}" SelectedItem="{Binding TransactionFromClient, Mode=TwoWay}" />
+			<ComboBox ItemsSource="{Binding TransactionFromAccounts}" SelectedItem="{Binding TransactionFromAccount}" />
+			
 			<TextBlock Text="Получатель" />
-			<ComboBox ItemsSource="{Binding Clients}" />
+			<ComboBox ItemsSource="{Binding Clients}" SelectedItem="{Binding TransactionToClient, Mode=TwoWay}" />
+			<ComboBox ItemsSource="{Binding TransactionToAccounts}" SelectedItem="{Binding TransactionToAccount}" />
+		
+			<TextBlock Text="Количество" />
+			<ui:NumberBox AcceptsExpression="True" Value="{Binding TransactionAmount, Mode=TwoWay}" />
+			<Button Content="Перевести" Click="OnTransferButtonClick" />
 		</ui:SimpleStackPanel>
 
 		<ui:SimpleStackPanel Grid.Column="2">
